@@ -6,11 +6,12 @@ public class BlockSpawner_Simple : MonoBehaviour
     public GameObject blockPrefab;
     public int rows = 5;
     public int columns = 2;
-    public float spacing = 2.7f;
-
-    [Header("Texture Logic - Simple IF")]
+    public float spacing = 2.7f;    [Header("Texture Logic - Simple IF")]
     public Texture correctTexture; // La textura correcta
     public Texture wrongTexture;   // La textura incorrecta
+
+    [Header("Texture Settings")]
+    public Vector2 textureScale = new Vector2(2f, 2f); // Escala de repetición de textura
 
     [Header("Nivel y Dificultad")]
     public int nivelAsociado = 1; // Para registrar métricas por nivel
@@ -53,7 +54,13 @@ public class BlockSpawner_Simple : MonoBehaviour
                 {
                     // BLOQUE CORRECTO: SI tiene la textura correcta → Es seguro
                     if (renderer != null)
-                        renderer.material.mainTexture = correctTexture;
+                    {
+                        // Crear una instancia del material para evitar modificar el original
+                        Material newMaterial = new Material(renderer.material);
+                        newMaterial.mainTexture = correctTexture;
+                        newMaterial.mainTextureScale = textureScale; // Aplicar escala de textura
+                        renderer.material = newMaterial;
+                    }
 
                     collider.isTrigger = false; // Sólido para caminar encima
                     block.name = $"CorrectBlock_Row{row}_Col{col}";
@@ -78,12 +85,17 @@ public class BlockSpawner_Simple : MonoBehaviour
                     // Agregar el componente CountOnCorrect al trigger también
                     triggerZone.AddComponent<CountOnCorrect>();
 
-                }
-                else
+                }                else
                 {
                     // BLOQUE INCORRECTO: NO tiene la textura correcta → Se destruye
                     if (renderer != null)
-                        renderer.material.mainTexture = wrongTexture;
+                    {
+                        // Crear una instancia del material para evitar modificar el original
+                        Material newMaterial = new Material(renderer.material);
+                        newMaterial.mainTexture = wrongTexture;
+                        newMaterial.mainTextureScale = textureScale; // Aplicar escala de textura
+                        renderer.material = newMaterial;
+                    }
 
                     collider.isTrigger = true;
 

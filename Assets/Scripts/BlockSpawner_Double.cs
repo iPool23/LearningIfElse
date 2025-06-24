@@ -6,11 +6,12 @@ public class BlockSpawner_Double : MonoBehaviour
     public GameObject blockPrefab;
     public int rows = 5;
     public int columns = 2;
-    public float spacing = 2.7f;
-
-    [Header("Texture Logic - IF-ELSE")]
+    public float spacing = 2.7f;    [Header("Texture Logic - IF-ELSE")]
     public Texture safeTexture;     // Si hay gato → seguro
     public Texture dangerTexture;   // Si hay perro → peligroso
+
+    [Header("Texture Settings")]
+    public Vector2 textureScale = new Vector2(2f, 2f); // Escala de repetición de textura
 
     [Header("Nivel y Dificultad")]
     public int nivelAsociado = 2; // Para registrar métricas por nivel
@@ -53,11 +54,11 @@ public class BlockSpawner_Double : MonoBehaviour
                     col * spacing - (columns - 1) * spacing / 2f,
                     0,
                     row * spacing
-                );
-
-                // Crear bloque como hijo del contenedor
+                );                // Crear bloque como hijo del contenedor
                 GameObject block = Instantiate(blockPrefab, container);
-                block.transform.localPosition = localPosition;                var renderer = block.GetComponent<Renderer>();
+                block.transform.localPosition = localPosition;
+
+                var renderer = block.GetComponent<Renderer>();
                 var collider = block.GetComponent<Collider>();
 
                 // LÓGICA IF-ELSE CORRECTA:
@@ -67,9 +68,13 @@ public class BlockSpawner_Double : MonoBehaviour
                 {
                     // IF: Es la columna segura → Poner gato (seguro)
                     if (renderer != null)
-                        renderer.material.mainTexture = safeTexture;
-
-                    collider.isTrigger = false; // Sólido
+                    {
+                        // Crear una instancia del material para evitar modificar el original
+                        Material newMaterial = new Material(renderer.material);
+                        newMaterial.mainTexture = safeTexture;
+                        newMaterial.mainTextureScale = textureScale; // Aplicar escala de textura
+                        renderer.material = newMaterial;
+                    }                    collider.isTrigger = false; // Sólido
                     block.name = $"SafeBlock_Cat_Row{row}_Col{col}";
 
                     // Agregar componente para contar aciertos
@@ -82,7 +87,13 @@ public class BlockSpawner_Double : MonoBehaviour
                 {
                     // ELSE: No es la columna segura → Poner perro (peligroso)
                     if (renderer != null)
-                        renderer.material.mainTexture = dangerTexture;
+                    {
+                        // Crear una instancia del material para evitar modificar el original
+                        Material newMaterial = new Material(renderer.material);
+                        newMaterial.mainTexture = dangerTexture;
+                        newMaterial.mainTextureScale = textureScale; // Aplicar escala de textura
+                        renderer.material = newMaterial;
+                    }
 
                     collider.isTrigger = true;
 

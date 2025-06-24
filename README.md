@@ -1,11 +1,10 @@
-# Sistema de Barreras y Tutorial - Juego VR Condicionales
+# Sistema de Barreras - Juego VR Condicionales
 
 ## 📋 Resumen del Sistema
 
 Este proyecto implementa un sistema completo de aprendizaje de condicionales IF-ELSE en VR con:
 
 - **Barreras entre niveles** que bloquean el progreso hasta completar el nivel anterior
-- **Sistema de tutorial interactivo** 
 - **Métricas completas de aprendizaje** según tu investigación
 - **UI adaptada para VR**
 
@@ -28,7 +27,7 @@ Los **errores** se incrementan automáticamente cuando:
 ### 1. GameRespawn.cs (ACTUALIZADO)
 - **Función**: Gestor principal de métricas y progreso
 - **Incluye**: Todas las variables de tu investigación
-- **Nuevas funciones**: Sistema de barreras, tutorial, cálculo de métricas
+- **Nuevas funciones**: Sistema de barreras, cálculo de métricas
 
 ### 2. BlockInteraction.cs (NUEVO)
 - **Función**: Detecta cuando el jugador toca bloques
@@ -37,7 +36,7 @@ Los **errores** se incrementan automáticamente cuando:
 
 ### 3. UIManager.cs (NUEVO)
 - **Función**: Gestiona toda la interfaz de usuario
-- **Incluye**: Tutorial paso a paso, ayuda contextual, estadísticas
+- **Incluye**: ayuda contextual, estadísticas
 - **VR Ready**: Textos 3D y botones adaptados para VR
 
 ### 4. BarreraNivel.cs (NUEVO)
@@ -72,7 +71,7 @@ Los **errores** se incrementan automáticamente cuando:
 3. Configurar `nivelRequerido` en cada barrera
 
 ### Paso 5: Configurar UI
-1. Crear paneles: Tutorial, Barrera, HUD, Ayuda
+1. Crear paneles: Barrera, HUD, Ayuda
 2. Agregar `UIManager.cs` al Canvas
 3. Conectar referencias en el Inspector
 
@@ -95,7 +94,7 @@ Los **errores** se incrementan automáticamente cuando:
 
 ## 🎮 Flujo del Juego
 
-1. **Inicio**: Tutorial automático si es primera vez
+1. **Inicio**: Esta en el spawnpoint
 2. **Nivel 1**: Condicionales simples (IF)
 3. **Barrera**: Solo se abre al completar Nivel 1
 4. **Nivel 2**: Condicionales dobles (IF-ELSE)  
@@ -117,52 +116,12 @@ public float[] tiemposLimite = { 120f, 180f, 240f }; // segundos por nivel
 float precision = interaccionesTotales > 0 ? (float)interaccionesAcertadas / interaccionesTotales : 0f;
 ```
 
-### Ajustar Mensajes de Tutorial
-```csharp
-// En UIManager.cs, modificar los arrays:
-private string[] ayudaNivel1 = { /* tus mensajes */ };
-```
-
-## 🐛 Debug y Testing
-
-### Controles de Debug (solo en Editor)
-- **1, 2, 3**: Cambiar a nivel específico
-- **R**: Reiniciar nivel actual
-- **T**: Mostrar tutorial
-
-### Activar Modo Debug
-```csharp
-// En GameController.cs
-public bool modoDebug = true;
-```
-
-## 📈 Exportación de Datos
+## 📈 Exportación de Datos - PROXIMAMENTE
 
 Los datos se guardan en `PlayerPrefs` y se pueden exportar a:
 - JSON para análisis estadístico
 - CSV para Excel/SPSS
 - Base de datos para estudios longitudinales
-
-## 🤔 Preguntas Frecuentes
-
-**P: ¿Cómo se cuentan exactamente los desaciertos?**
-R: Se incrementa `errores` cuando: el jugador cae (Y < threshold), toca vidrio incorrecto (trigger), o intenta acceso no autorizado.
-
-**P: ¿El sistema funciona sin VR?**
-R: Sí, pero está optimizado para VR. Para desktop, cambiar Canvas a Screen Space.
-
-**P: ¿Cómo modificar la dificultad?**
-R: Ajustar número de filas/columnas en BlockSpawner, tiempos límite, o criterios de éxito.
-
-## 📞 Soporte
-
-Si necesitas ayuda adicional o modificaciones específicas, puedo ayudarte a:
-- Ajustar las métricas según tu investigación
-- Implementar exportación de datos específica
-- Crear niveles adicionales
-- Optimizar para diferentes dispositivos VR
-
-¡El sistema está listo para usar y generar los datos que necesitas para tu investigación!
 
 ## ✅ Errores Corregidos
 
@@ -174,7 +133,7 @@ Si necesitas ayuda adicional o modificaciones específicas, puedo ayudarte a:
 
 ### Cambios Realizados:
 - ✅ Todos los `FindObjectOfType<T>()` → `FindFirstObjectByType<T>()`
-- ✅ `IniciarTutorial()` y `GuardarEstadisticas()` ahora son públicos
+- ✅ `GuardarEstadisticas()` ahora son públicos
 - ✅ Referencias correctas entre GameController y GameRespawn
 - ✅ Sin errores de compilación
 

@@ -3,12 +3,11 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// Gestor de la interfaz de usuario y sistema de tutorial
+/// Gestor de la interfaz de usuario
 /// </summary>
 public class UIManager : MonoBehaviour
 {
     [Header("=== PANELES PRINCIPALES ===")]
-    public GameObject panelTutorial;
     public GameObject panelBarrera;
     public GameObject panelHUD;
     public GameObject panelAyuda;
@@ -19,15 +18,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI txtPuntaje;
     public TextMeshProUGUI txtTiempo;
     public TextMeshProUGUI txtAciertos;
-    public TextMeshProUGUI txtErrores;
-    public Slider barraProgreso;
-
-    [Header("=== TUTORIAL ELEMENTOS ===")]
-    public TextMeshProUGUI txtTutorial;
-    public Button btnSiguienteTutorial;
-    public Button btnSaltarTutorial;
-    public Image imagenTutorial;
-    public Sprite[] imagenesTutorial;
+    public TextMeshProUGUI txtErrores;    public Slider barraProgreso;
 
     [Header("=== BARRERA ELEMENTOS ===")]
     public TextMeshProUGUI txtBarrera;
@@ -102,17 +93,8 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         ActualizarHUD();
-    }
-
-    void ConfigurarEventos()
+    }    void ConfigurarEventos()
     {
-        // Tutorial
-        if (btnSiguienteTutorial != null)
-            btnSiguienteTutorial.onClick.AddListener(() => gameManager?.SiguientePasoTutorial());
-
-        if (btnSaltarTutorial != null)
-            btnSaltarTutorial.onClick.AddListener(SaltarTutorial);
-
         // Barrera
         if (btnSiguienteNivel != null)
             btnSiguienteNivel.onClick.AddListener(() => gameManager?.PasarSiguienteNivel());
@@ -127,17 +109,10 @@ public class UIManager : MonoBehaviour
 
     void InicializarUI()
     {
-        // Asegurarse de que solo el HUD esté activo al inicio
-        if (panelHUD != null) panelHUD.SetActive(true);
+        // Asegurarse de que solo el HUD esté activo al inicio        if (panelHUD != null) panelHUD.SetActive(true);
         if (panelBarrera != null) panelBarrera.SetActive(false);
         if (panelAyuda != null) panelAyuda.SetActive(false);
         if (panelEstadisticas != null) panelEstadisticas.SetActive(false);
-
-        // El tutorial se activará desde GameRespawn si es necesario
-        if (panelTutorial != null && gameManager != null && !gameManager.completo_Tutorial)
-        {
-            panelTutorial.SetActive(true);
-        }
     }
 
     void ActualizarHUD()
@@ -201,50 +176,10 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void MostrarAyuda()
-    {
-        if (panelAyuda == null || gameManager == null) return;
-
-        panelAyuda.SetActive(true);
-        gameManager.MostrarAyuda(); // Registra la métrica
-
-        // Mostrar ayuda específica del nivel actual
-        string[] ayudaActual = ayudaNivel1; // Por defecto
-
-        switch (gameManager.nivelActual)
-        {
-            case 1:
-                ayudaActual = ayudaNivel1;
-                break;
-            case 2:
-                ayudaActual = ayudaNivel2;
-                break;
-            case 3:
-                ayudaActual = ayudaNivel3;
-                break;
-        }
-
-        // Configurar textos de ayuda
-        if (txtAyudaNivel1 != null)
-            txtAyudaNivel1.text = string.Join("\n", ayudaActual);
-    }
-
     void CerrarAyuda()
     {
         if (panelAyuda != null)
             panelAyuda.SetActive(false);
-    }
-
-    void SaltarTutorial()
-    {
-        if (gameManager != null)
-        {
-            gameManager.completo_Tutorial = true;
-            gameManager.tutorialActivo = false;
-        }
-
-        if (panelTutorial != null)
-            panelTutorial.SetActive(false);
     }
 
     public void MostrarMensajeExito()
@@ -331,11 +266,6 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Métodos Públicos para VR
-
-    public void BotonAyuda()
-    {
-        MostrarAyuda();
-    }
 
     public void BotonPausa()
     {

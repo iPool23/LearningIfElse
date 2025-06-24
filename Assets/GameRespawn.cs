@@ -81,11 +81,9 @@ public class GameRespawn : MonoBehaviour
     public int if_Statements_Correctos = 0;     // Entendió cuándo usar IF
     public int else_Statements_Correctos = 0;   // Entendió cuándo usar ELSE
     public int nested_Statements_Correctos = 0; // Entendió condicionales anidadas
-    
-    [Header("Patrones de Comportamiento")]
+      [Header("Patrones de Comportamiento")]
     public int dudas_Expresadas = 0;            // Cuántas veces pidió ayuda
     public int pausas_Largas = 0;               // Pausas > 5 segundos antes de saltar
-    public bool completo_Tutorial = false;      // Si completó el tutorial inicial
     public int veces_Menu_Ayuda = 0;           // Acceso al menú de ayuda
     
     [Header("Tiempo y Progreso")]
@@ -102,21 +100,12 @@ public class GameRespawn : MonoBehaviour
     
     [Header("=== SISTEMA DE NIVELES Y BARRERAS ===")]
     public int nivelActual = 1;
-    public int maxNivel = 3;
-    public bool[] nivelesCompletados = new bool[3];
+    public int maxNivel = 3;    public bool[] nivelesCompletados = new bool[3];
     public float[] tiemposLimite = { 120f, 180f, 240f }; // Tiempo límite por nivel
     
-    [Header("=== SISTEMA DE TUTORIAL ===")]
-    public bool tutorialActivo = false;
-    public int pasoTutorialActual = 0;
-    public int totalPasosTutorial = 5;
-    
-    [Header("=== UI REFERENCIAS ===")]
-    public TextMeshProUGUI uiNivelActual;
+    [Header("=== UI REFERENCIAS ===")]    public TextMeshProUGUI uiNivelActual;
     public TextMeshProUGUI uiPuntaje;
     public TextMeshProUGUI uiTiempo;
-    public TextMeshProUGUI uiTutorial;
-    public GameObject panelTutorial;
     public GameObject panelBarrera;
     public Button botonSiguienteNivel;
     public Button botonReintentar;
@@ -134,16 +123,9 @@ public class GameRespawn : MonoBehaviour
             Debug.LogWarning($"Redimensionando array nivelesCompletados a {maxNivel} elementos");
             nivelesCompletados = new bool[maxNivel];
         }
-        
-        tiempoInicio_Sesion = Time.time;
+          tiempoInicio_Sesion = Time.time;
         tiempoInicioNivel = Time.time;
         ultimaPosicion = transform.position;
-        
-        // Inicializar tutorial si es la primera vez
-        if (!completo_Tutorial)
-        {
-            IniciarTutorial();
-        }
         
         ActualizarUI();
     }
@@ -400,75 +382,6 @@ public class GameRespawn : MonoBehaviour
         
         Debug.Log("¡Juego completado! Guardando estadísticas...");
         GuardarEstadisticas();
-    }
-    
-    #endregion
-      #region Sistema de Tutorial
-    
-    public void IniciarTutorial()
-    {
-        tutorialActivo = true;
-        pasoTutorialActual = 0;
-        
-        if (panelTutorial != null)
-        {
-            panelTutorial.SetActive(true);
-        }
-        
-        MostrarPasoTutorial();
-    }
-    
-    void MostrarPasoTutorial()
-    {
-        string[] pasosTutorial = {
-            "¡Bienvenido al juego de condicionales IF-ELSE! Aprenderás programación saltando vidrios.",
-            "Objetivo: Llegar al final saltando solo sobre los vidrios SEGUROS (verdes).",
-            "Los vidrios ROJOS se romperán y caerás. ¡Observa bien antes de saltar!",
-            "Usa los controles VR para moverte y saltar. Recuerda: IF (vidrio verde) THEN (saltar).",
-            "¡Perfecto! Ahora comienza el nivel 1. ¡Buena suerte!"
-        };
-        
-        if (uiTutorial != null && pasoTutorialActual < pasosTutorial.Length)
-        {
-            uiTutorial.text = pasosTutorial[pasoTutorialActual];
-        }
-    }
-    
-    public void SiguientePasoTutorial()
-    {
-        pasoTutorialActual++;
-        
-        if (pasoTutorialActual < totalPasosTutorial)
-        {
-            MostrarPasoTutorial();
-        }
-        else
-        {
-            FinalizarTutorial();
-        }
-    }
-    
-    void FinalizarTutorial()
-    {
-        tutorialActivo = false;
-        completo_Tutorial = true;
-        
-        if (panelTutorial != null)
-        {
-            panelTutorial.SetActive(false);
-        }
-        
-        Debug.Log("Tutorial completado");
-    }
-    
-    public void MostrarAyuda()
-    {
-        veces_Menu_Ayuda++;
-        ayudas_Solicitadas++;
-        dudas_Expresadas++;
-        
-        // Aquí puedes mostrar un panel de ayuda
-        Debug.Log("Mostrando ayuda - Veces solicitada: " + veces_Menu_Ayuda);
     }
     
     #endregion

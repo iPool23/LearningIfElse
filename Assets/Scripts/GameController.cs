@@ -16,10 +16,7 @@ public class GameController : MonoBehaviour
 
     [Header("=== BARRERAS ENTRE NIVELES ===")]
     public BarreraNivel barreraNivel2;
-    public BarreraNivel barreraNivel3;
-
-    [Header("=== CONFIGURACIÓN INICIAL ===")]
-    public bool iniciarConTutorial = true;
+    public BarreraNivel barreraNivel3;    [Header("=== CONFIGURACIÓN INICIAL ===")]
     public bool modoDebug = false;
 
     void Start()
@@ -117,19 +114,9 @@ public class GameController : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             CambiarANivel(3);
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
+        }        if (Input.GetKeyDown(KeyCode.R))
         {
             ReiniciarNivelActual();
-        }
-
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            if (gameRespawn != null)
-            {
-                gameRespawn.IniciarTutorial();
-            }
         }
     }
 
@@ -155,15 +142,12 @@ public class GameController : MonoBehaviour
         {
             gameRespawn.ReintentarNivel();
         }
-    }
-
-    void MostrarInfoDebug()
+    }    void MostrarInfoDebug()
     {
         Debug.Log("=== MODO DEBUG ACTIVADO ===");
         Debug.Log("Controles de debug:");
         Debug.Log("1, 2, 3 - Cambiar nivel");
         Debug.Log("R - Reiniciar nivel");
-        Debug.Log("T - Mostrar tutorial");
         Debug.Log("========================");
     }
 

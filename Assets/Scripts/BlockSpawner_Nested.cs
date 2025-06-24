@@ -6,11 +6,14 @@ public class BlockSpawner_Nested : MonoBehaviour
     public GameObject blockPrefab;
     public int rows = 5;
     public int columns = 2;
-    public float spacing = 2.7f; [Header("Texture Logic - Nested IF")]
+    public float spacing = 2.7f;    [Header("Texture Logic - Nested IF")]
     public Texture redCrystalTexture;      // Rojo + símbolo = SEGURO
     public Texture redNoSymbolTexture;     // Rojo sin símbolo = PELIGROSO
     public Texture blueCrystalTexture;     // Azul = PELIGROSO
     public Texture greenCrystalTexture;    // Verde = PELIGROSO
+
+    [Header("Texture Settings")]
+    public Vector2 textureScale = new Vector2(2f, 2f); // Escala de repetición de textura
 
     [Header("Nivel y Dificultad")]
     public int nivelAsociado = 3; // Para registrar métricas por nivel
@@ -67,9 +70,13 @@ public class BlockSpawner_Nested : MonoBehaviour
                 {
                     // BLOQUE SEGURO: Siempre rojo con símbolo
                     if (renderer != null)
-                        renderer.material.mainTexture = redCrystalTexture;
-
-                    collider.isTrigger = false; // Sólido
+                    {
+                        // Crear una instancia del material para evitar modificar el original
+                        Material newMaterial = new Material(renderer.material);
+                        newMaterial.mainTexture = redCrystalTexture;
+                        newMaterial.mainTextureScale = textureScale; // Aplicar escala de textura
+                        renderer.material = newMaterial;
+                    }                    collider.isTrigger = false; // Sólido
                     block.name = $"SafeBlock_RedSymbol_Row{row}_Col{col}";
 
                     // Agregar componente para contar aciertos
@@ -86,7 +93,13 @@ public class BlockSpawner_Nested : MonoBehaviour
                     Texture selectedTexture = dangerTextures[Random.Range(0, dangerTextures.Length)];
 
                     if (renderer != null)
-                        renderer.material.mainTexture = selectedTexture;
+                    {
+                        // Crear una instancia del material para evitar modificar el original
+                        Material newMaterial = new Material(renderer.material);
+                        newMaterial.mainTexture = selectedTexture;
+                        newMaterial.mainTextureScale = textureScale; // Aplicar escala de textura
+                        renderer.material = newMaterial;
+                    }
 
                     collider.isTrigger = true;
 
@@ -344,7 +357,6 @@ public class BlockSpawner_Nested : MonoBehaviour
         Debug.Log("=== PATRONES DE COMPORTAMIENTO ===");
         Debug.Log($"  - Dudas expresadas: {gameManager.dudas_Expresadas}");
         Debug.Log($"  - Pausas largas: {gameManager.pausas_Largas}");
-        Debug.Log($"  - Completó tutorial: {gameManager.completo_Tutorial}");
         Debug.Log($"  - Veces menú ayuda: {gameManager.veces_Menu_Ayuda}");
 
         // Tiempo y progreso
