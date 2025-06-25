@@ -4,6 +4,8 @@ public class CountOnCorrect : MonoBehaviour
 {
     private GameRespawn gameManager;
     private UIManager uiManager; private bool yaContado = false; // Para evitar múltiples conteos
+    private Color? colorOriginal = null; // Guardar el color original para restaurar correctamente
+    private string bloqueID; // Identificador único del bloque
 
     void Start()
     {
@@ -25,6 +27,9 @@ public class CountOnCorrect : MonoBehaviour
         {
             Debug.LogWarning($"¡No hay Collider en {gameObject.name}!");
         }
+
+        // Asignar un identificador único al bloque (puede ser el nombre inicial)
+        bloqueID = gameObject.name;
     }    void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") && !yaContado)
@@ -59,7 +64,21 @@ public class CountOnCorrect : MonoBehaviour
         }
     }    void RegistrarAcierto()
     {
+        // Verificar si este bloque ya fue contado en la sesión
+        if (gameManager != null && gameManager.BloqueYaContado(bloqueID))
+        {
+            Debug.Log($"❌ Bloque {bloqueID} ya fue contado en la sesión. No suma acierto.");
+            yaContado = true;
+            MarcarComoUsado(); // Opcional: marcar visualmente aunque no sume
+            return;
+        }
         yaContado = true;
+
+        // Registrar el bloque como contado en la sesión
+        if (gameManager != null)
+        {
+            gameManager.RegistrarBloqueContado(bloqueID);
+        }
 
         // Registrar acierto en las métricas
         if (gameManager != null)
@@ -95,12 +114,6 @@ public class CountOnCorrect : MonoBehaviour
             Debug.Log($"🎯 ¡ACIERTO #{gameManager.aciertos} en {gameObject.name}! Puntaje: {gameManager.puntajeObtenido}");
         }
 
-        // Mostrar mensaje de éxito en UI
-        if (uiManager != null)
-        {
-            uiManager.MostrarMensajeExito();
-        }
-
         // Efecto visual permanente: marcar como "usado"
         MarcarComoUsado();
         
@@ -112,14 +125,13 @@ public class CountOnCorrect : MonoBehaviour
         var renderer = GetComponent<Renderer>();
         if (renderer != null)
         {
-            // Guardar color original
-            Color originalColor = renderer.material.color;
-            
+            // Guardar color original solo la primera vez
+            if (colorOriginal == null)
+                colorOriginal = renderer.material.color;
             // Cambiar a color de éxito temporalmente
             renderer.material.color = Color.green;
-            
             // Volver al color original después de un tiempo
-            StartCoroutine(RestaurarColorOriginal(renderer, originalColor));
+            StartCoroutine(RestaurarColorOriginal(renderer));
         }
 
         // Reproducir sonido de éxito
@@ -132,7 +144,14 @@ public class CountOnCorrect : MonoBehaviour
         Debug.Log("✨ Efecto de acierto creado");
     }
 
-    void MarcarComoUsado()
+    System.Collections.IEnumerator RestaurarColorOriginal(Renderer renderer)
+    {
+        yield return new WaitForSeconds(0.5f);
+        if (renderer != null && colorOriginal != null)
+        {
+            renderer.material.color = colorOriginal.Value;
+        }
+    }    void MarcarComoUsado()
     {
         // Cambiar el nombre del objeto para indicar que ya fue usado
         gameObject.name += " ✓USADO";
@@ -147,33 +166,21 @@ public class CountOnCorrect : MonoBehaviour
         }
     }
 
-    System.Collections.IEnumerator RestaurarColorOriginal(Renderer renderer, Color colorOriginal)
-    {
-        yield return new WaitForSeconds(0.5f);
-        if (renderer != null)
-        {
-            renderer.material.color = colorOriginal;
-        }
-    }    // Método para resetear el contador (útil cuando se regeneran bloques)
+    // Método para resetear el contador (útil cuando se regeneran bloques)
     public void ResetearContador()
     {
         yaContado = false;
-        
         // Restaurar el nombre original (quitar el "✓USADO")
         if (gameObject.name.Contains(" ✓USADO"))
         {
             gameObject.name = gameObject.name.Replace(" ✓USADO", "");
         }
-        
         // Restaurar color original si fue modificado
         var renderer = GetComponent<Renderer>();
-        if (renderer != null)
+        if (renderer != null && colorOriginal != null)
         {
-            Color currentColor = renderer.material.color;
-            // Restaurar brillo original
-            renderer.material.color = new Color(currentColor.r / 0.8f, currentColor.g / 0.8f, currentColor.b / 0.8f, currentColor.a);
+            renderer.material.color = colorOriginal.Value;
         }
-        
         Debug.Log($"🔄 Contador reseteado en {gameObject.name}");
     }
 }

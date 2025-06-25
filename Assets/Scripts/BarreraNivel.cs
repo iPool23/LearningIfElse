@@ -290,11 +290,19 @@ public class BarreraNivel : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        // Este método solo se ejecutará si el collider está como trigger
-        // (solo para barreras desbloqueadas que permiten retroceso completo)
         if (other.CompareTag("Player"))
         {
-            Debug.Log($"Jugador pasó libremente por barrera del nivel {nivelRequerido} (modo trigger)");
+            Debug.Log($"Jugador pasó por barrera del nivel {nivelRequerido} (trigger)");
+
+            // Si la barrera está completada y NO permite retroceso, no dejar pasar
+            if (nivelCompletado && !permitirRetroceso)
+            {
+                // Teletransportar al jugador de vuelta al lado correcto
+                TeletransportarParaAvance(other);
+                MostrarMensajeNoRetroceso();
+                Debug.Log($"🟡 Barrera amarilla: retroceso bloqueado por trigger en nivel {nivelRequerido}");
+                return;
+            }
 
             // Solo registrar paso si la barrera permite paso libre
             if (estaDesbloqueada && (permitirRetroceso || !nivelCompletado))
@@ -438,10 +446,44 @@ public class BarreraNivel : MonoBehaviour
         {
             // Registrar que el jugador cambió de nivel exitosamente
             gameManager.manipulacionesInteractivas++;
+            // Iniciar el timer del nivel exactamente al pasar la barrera SOLO si la barrera está activa
+            if (gameObject.activeSelf)
+            {
+                gameManager.IniciarTiempoNivel();
+            }
+            Debug.Log($"Jugador pasó al nivel {nivelRequerido} y se inició el timer del nivel");
+        }
+        // Desactivar la barrera para que no pueda volver a reiniciar el tiempo
+        DesactivarBarrera();
+    }
 
-            Debug.Log($"Jugador pasó al nivel {nivelRequerido}");
+    /// <summary>
+    /// Desactiva la barrera tras pasarla correctamente
+    /// </summary>
+    public void DesactivarBarrera()
+    {
+        gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// Reactiva la barrera (llamar desde GameRespawn al reintentar o completar nivel)
+    /// </summary>
+    public void ActivarBarrera()
+    {
+        gameObject.SetActive(true);
+        // Forzar actualización de estado visual y físico
+        ActualizarEstadoBarrera();
+        // Si el nivel ya está completado y no permite retroceso, forzar modo amarillo sólido
+        if (nivelCompletado && !permitirRetroceso)
+        {
+            MarcarComoCompletado();
+        }
+        else if (!estaDesbloqueada)
+        {
+            BloquearBarrera();
         }
     }
+
     System.Collections.IEnumerator MostrarMensajeTemporal()
     {
         yield return StartCoroutine(MostrarMensajeTemporalPersonalizado(mensajeBloqueo, Color.red));

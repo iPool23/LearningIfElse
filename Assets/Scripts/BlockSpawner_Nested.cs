@@ -8,9 +8,9 @@ public class BlockSpawner_Nested : MonoBehaviour
     public int columns = 2;
     public float spacing = 2.7f;    [Header("Texture Logic - Nested IF")]
     public Texture redCrystalTexture;      // Rojo + símbolo = SEGURO
-    public Texture redNoSymbolTexture;     // Rojo sin símbolo = PELIGROSO
-    public Texture blueCrystalTexture;     // Azul = PELIGROSO
-    public Texture greenCrystalTexture;    // Verde = PELIGROSO
+    public Texture redNoSymbolTexture;     // Rojo sin símbolo = PELIGROSO (única peligrosa)
+    public Texture blueCrystalTexture;     // Azul = SEGURO
+    public Texture greenCrystalTexture;    // Verde = SEGURO
 
     [Header("Texture Settings")]
     public Vector2 textureScale = new Vector2(2f, 2f); // Escala de repetición de textura
@@ -38,16 +38,25 @@ public class BlockSpawner_Nested : MonoBehaviour
         }
 
         GenerateNestedConditionalBlocks();
-    }
-    void GenerateNestedConditionalBlocks()
+    }    void GenerateNestedConditionalBlocks()
     {
         // Si no hay contenedor especificado, usar este objeto
         Transform container = blockContainer != null ? blockContainer : transform;
 
+        // Array de texturas seguras (3 de 4)
+        Texture[] safeTextures = { redCrystalTexture, blueCrystalTexture, greenCrystalTexture };
+        // Única textura peligrosa
+        Texture dangerTexture = redNoSymbolTexture;
+
+        // Lista para garantizar que todas las texturas aparezcan al menos una vez
+        System.Collections.Generic.List<Texture> texturesUsed = new System.Collections.Generic.List<Texture>();
+        
         for (int row = 0; row < rows; row++)
         {
             // Garantizar que al menos uno por fila sea seguro
             int safeColumnIndex = Random.Range(0, columns);
+            // Garantizar que al menos uno por fila sea peligroso
+            int dangerColumnIndex = (safeColumnIndex == 0) ? 1 : 0; // La otra columna
 
             for (int col = 0; col < columns; col++)
             {
@@ -56,60 +65,71 @@ public class BlockSpawner_Nested : MonoBehaviour
                     col * spacing - (columns - 1) * spacing / 2f,
                     0,
                     row * spacing
-                );                // Crear bloque como hijo del contenedor
+                );
+
+                // Crear bloque como hijo del contenedor
                 GameObject block = Instantiate(blockPrefab, container);
                 block.transform.localPosition = localPosition;
 
                 var renderer = block.GetComponent<Renderer>();
                 var collider = block.GetComponent<Collider>();
 
-                // LÓGICA ANIDADA CORRECTA:
-                // IF (col == safeColumnIndex) THEN bloque_seguro (rojo con símbolo)
-                // ELSE bloque_peligroso (rojo sin símbolo, azul o verde)
+                Texture selectedTexture;
+
+                // LÓGICA PARA GARANTIZAR QUE TODAS LAS TEXTURAS APAREZCAN:
                 if (col == safeColumnIndex)
                 {
-                    // BLOQUE SEGURO: Siempre rojo con símbolo
+                    // BLOQUE GARANTIZADO SEGURO
+                    // En las primeras 3 filas, forzar que aparezcan las 3 texturas seguras
+                    if (row < 3)
+                    {
+                        selectedTexture = safeTextures[row]; // Fila 0->Roja, Fila 1->Azul, Fila 2->Verde
+                        texturesUsed.Add(selectedTexture);
+                    }
+                    else
+                    {
+                        // En las filas restantes, usar cualquier textura segura
+                        selectedTexture = safeTextures[Random.Range(0, safeTextures.Length)];
+                    }
+
                     if (renderer != null)
                     {
-                        // Crear una instancia del material para evitar modificar el original
                         Material newMaterial = new Material(renderer.material);
-                        newMaterial.mainTexture = redCrystalTexture;
-                        newMaterial.mainTextureScale = textureScale; // Aplicar escala de textura
+                        newMaterial.mainTexture = selectedTexture;
+                        newMaterial.mainTextureScale = textureScale;
                         renderer.material = newMaterial;
-                    }                    collider.isTrigger = false; // Sólido
-                    block.name = $"SafeBlock_RedSymbol_Row{row}_Col{col}";
+                    }
 
-                    // Agregar componente para contar aciertos
+                    collider.isTrigger = false; // Sólido
+                    block.name = $"SafeBlock_Row{row}_Col{col}";
+
                     if (block.GetComponent<CountOnCorrect>() == null)
                     {
                         block.AddComponent<CountOnCorrect>();
                     }
-
                 }
-                else
+                else if (col == dangerColumnIndex)
                 {
-                    // BLOQUES PELIGROSOS: Pueden ser rojo sin símbolo, azul o verde
-                    Texture[] dangerTextures = { redNoSymbolTexture, blueCrystalTexture, greenCrystalTexture };
-                    Texture selectedTexture = dangerTextures[Random.Range(0, dangerTextures.Length)];
+                    // BLOQUE GARANTIZADO PELIGROSO: En cada fila debe haber al menos uno
+                    selectedTexture = dangerTexture;
+                    texturesUsed.Add(dangerTexture);
 
                     if (renderer != null)
                     {
-                        // Crear una instancia del material para evitar modificar el original
                         Material newMaterial = new Material(renderer.material);
                         newMaterial.mainTexture = selectedTexture;
-                        newMaterial.mainTextureScale = textureScale; // Aplicar escala de textura
+                        newMaterial.mainTextureScale = textureScale;
                         renderer.material = newMaterial;
                     }
 
                     collider.isTrigger = true;
 
-                    // Asegurar que tiene el componente DestroyOnTrigger
                     if (block.GetComponent<DestroyOnTrigger>() == null)
-                    {                        block.AddComponent<DestroyOnTrigger>();
+                    {
+                        block.AddComponent<DestroyOnTrigger>();
                     }
 
                     block.name = $"DangerBlock_Row{row}_Col{col}";
-
                 }
 
                 // Agregar etiqueta de Parent para organización
@@ -117,13 +137,22 @@ public class BlockSpawner_Nested : MonoBehaviour
             }
         }
 
+        // Verificar que todas las texturas hayan aparecido al menos una vez
+        Debug.Log($"Texturas utilizadas en el nivel: {texturesUsed.Count}");
+        foreach (var texture in texturesUsed)
+        {
+            Debug.Log($"- Textura usada: {texture.name}");
+        }
+
         // Registrar que se generaron los bloques
         if (gameManager != null)
         {
             gameManager.comandosIniciados++;
             Debug.Log($"Nivel {nivelAsociado} (Anidado) generado: {rows} filas, {columns} columnas");
+            Debug.Log("REGLA ANIDADA: Rojo con símbolo + Azul + Verde = SEGURO | Rojo sin símbolo = PELIGROSO");
+            Debug.Log("GARANTÍA: Las 3 texturas seguras aparecen al menos 1 vez Y la peligrosa aparece en TODAS las filas");
         }
-    }    /// <summary>
+    }/// <summary>
          /// Método para regenerar los bloques (útil para reintentos)
          /// </summary>
     public void RegenerarBloques()
@@ -259,15 +288,17 @@ public class BlockSpawner_Nested : MonoBehaviour
                 cc.enabled = true;
             }
 
-            Debug.Log($"Jugador teletransportado exitosamente a {player.transform.position}");
-
-            // AHORA SÍ completar el nivel
+            Debug.Log($"Jugador teletransportado exitosamente a {player.transform.position}");            // AHORA SÍ completar el nivel
             yield return new WaitForSeconds(0.3f); // Pequeño delay adicional
 
             if (gameManager != null)
             {
                 Debug.Log("Completando nivel final y terminando juego...");
                 gameManager.CompletarNivelActual();
+
+                // Completar la transición del nivel después del teletransporte
+                yield return new WaitForSeconds(0.5f); // Dar tiempo para que se procese
+                gameManager.CompletarTransicionNivel();
 
                 // Mostrar todos los datos recolectados
                 yield return new WaitForSeconds(1f); // Esperar un segundo antes de mostrar los datos

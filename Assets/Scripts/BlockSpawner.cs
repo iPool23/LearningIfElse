@@ -196,19 +196,14 @@ public class BlockSpawner_Simple : MonoBehaviour
                 // Condición más flexible para completar el nivel
                 bool puedeCompletar = playerOnFinalBlock && !nivelCompletado &&
                                     (gameManager.nivelActual == nivelAsociado ||
-                                    (nivelAsociado == 1 && gameManager.nivelActual <= 1));
-
-                if (puedeCompletar)
+                                    (nivelAsociado == 1 && gameManager.nivelActual <= 1));                if (puedeCompletar)
                 {
                     nivelCompletado = true; // Marcar como completado para evitar múltiples llamadas
                     // ¡Nivel completado!
                     Debug.Log($"¡Nivel {nivelAsociado} (IF Simple) completado!");
 
-                    // Registrar completion del nivel ANTES del teletransporte
-                    gameManager.CompletarNivelActual();
-
-                    // Teletransportar al jugador a las coordenadas especificadas con delay
-                    StartCoroutine(TeletransportarConDelay(player));
+                    // Teletransportar PRIMERO, luego completar nivel
+                    StartCoroutine(TeletransportarYCompletarNivel(player));
                 }
             }
             else
@@ -265,6 +260,69 @@ public class BlockSpawner_Simple : MonoBehaviour
             }
 
             Debug.Log($"Jugador teletransportado exitosamente a {player.transform.position}");
+        }
+    }
+    /// <summary>
+    /// Teletransportar y luego completar el nivel
+    /// </summary>
+    System.Collections.IEnumerator TeletransportarYCompletarNivel(GameObject player)
+    {
+        Debug.Log("Iniciando teletransporte y completado de nivel...");
+        yield return new WaitForSeconds(0.5f); // Pequeño delay
+
+        if (player != null)
+        {
+            Debug.Log("Teletransportando jugador a spawn point...");
+
+            // Desactivar física temporalmente
+            Rigidbody rb = player.GetComponent<Rigidbody>();
+            CharacterController cc = player.GetComponent<CharacterController>();
+
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.isKinematic = true; // Temporalmente kinematic
+            }
+
+            if (cc != null)
+            {
+                cc.enabled = false; // Desactivar temporalmente
+            }
+
+            // Teletransportar
+            player.transform.position = new Vector3(-11.804f, 1.022f, -0.238f);
+            player.transform.rotation = Quaternion.identity; // Resetear rotación también
+
+            yield return new WaitForEndOfFrame(); // Esperar un frame
+
+            // Reactivar física
+            if (rb != null)
+            {
+                rb.isKinematic = false;
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            if (cc != null)
+            {
+                cc.enabled = true;
+            }
+
+            Debug.Log($"Jugador teletransportado exitosamente a {player.transform.position}");
+
+            // AHORA completar el nivel DESPUÉS del teletransporte
+            yield return new WaitForSeconds(0.3f);
+
+            if (gameManager != null)
+            {
+                Debug.Log("Completando nivel después del teletransporte...");
+                gameManager.CompletarNivelActual();
+
+                // Completar la transición del nivel
+                yield return new WaitForSeconds(0.5f);
+                gameManager.CompletarTransicionNivel();
+            }
         }
     }
 }

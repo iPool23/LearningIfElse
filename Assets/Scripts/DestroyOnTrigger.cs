@@ -26,12 +26,6 @@ public class DestroyOnTrigger : MonoBehaviour
                 Debug.Log("¡Vidrio roto! Caída registrada.");
             }
 
-            // Mostrar mensaje de error en UI
-            if (uiManager != null)
-            {
-                uiManager.MostrarMensajeError();
-            }
-
             // Efecto visual opcional (partículas de vidrio roto)
             CrearEfectoVidroRoto();
 
