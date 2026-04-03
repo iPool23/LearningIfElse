@@ -1,125 +1,49 @@
-# ==============================================
-# Unity .gitignore — LearningIfElse VR Project
-# ==============================================
+# ================================================
+#  LearningIfElse v1 — Senior .gitignore
+# ================================================
 
-# ---- Carpetas generadas por Unity (NO subir) ----
+# ---- Carpetas temporales y caché de Unity ----
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
 [Bb]uild/
 [Bb]uilds/
-[Ll]ogs/
+[Ll]logs/
 [Mm]emoryCaptures/
+/[Uu]ser[Ss]ettings/
 
-# ---- Caché del Asset Store y paquetes locales ----
-/[Aa]ssets/AssetStoreTools*
-
-# ---- Archivos de autocompletado / IDE ----
+# ---- Archivos del IDE / Soluciones ----
 .vs/
 .vscode/
 *.csproj
 *.unityproj
 *.sln
-*.slnx
-*.suo
-*.tmp
 *.user
 *.userprefs
-*.pidb
-*.booproj
-*.svd
 *.pdb
-*.mdb
 *.opendb
-*.VC.db
 
-# ---- Archivos de OS ----
-.DS_Store
-Thumbs.db
-Desktop.ini
-ehthumbs.db
+# ---- Regla Global de Assets (Solo subir nuestro trabajo) ----
+# Ignoramos todo el contenido de Assets por defecto
+/Assets/*
 
-# ---- Configuración local del editor ----
-/[Uu]ser[Ss]ettings/
+# EXCEPCIONES: Lo que SÍ queremos en el repositorio
+!/Assets/_Core/
+!/Assets/InputSystem_Actions.inputactions
+!/Assets/InputSystem_Actions.inputactions.meta
 
-# ---- Build results ----
-[Ww]indows[Ss]toreApp/
-*.apk
-*.aab
-*.unitypackage
-*.app
+# ---- Project Configuration ----
+!/ProjectSettings/
+!/Packages/
+!/README.md
+!/skills.sh
+!/.gitignore
 
-# ---- Firebase / Google Services ----
-# (Mantener google-services.json SI se decide incluir credenciales)
-# google-services.json
-
-# ---- Paquetes de terceros grandes (ya están en Package Manager) ----
-# Estos se reinstalan automáticamente con Packages/manifest.json
-/[Aa]ssets/[Oo]culus/
-/[Aa]ssets/[Oo]culus.meta
-/[Aa]ssets/[Mm]eta[Xx][Rr]/
-/[Aa]ssets/[Mm]eta[Xx][Rr].meta
-/[Aa]ssets/[Ss]amples/
-/[Aa]ssets/[Ss]amples.meta
-/[Aa]ssets/[Ss]tarter[Aa]ssets/
-/[Aa]ssets/[Ss]tarter[Aa]ssets.meta
-/[Aa]ssets/[Ee]xternalDependencyManager/
-/[Aa]ssets/[Ee]xternalDependencyManager.meta
-/[Aa]ssets/[Tt]extMesh Pro/
-/[Aa]ssets/[Tt]extMesh Pro.meta
-/[Aa]ssets/[Tt]utorial[Ii]nfo/
-/[Aa]ssets/[Tt]utorial[Ii]nfo.meta
-/[Aa]ssets/[Xx][Rr]/
-/[Aa]ssets/[Xx][Rr].meta
-/[Aa]ssets/[Xx][Rr][Ii]/
-/[Aa]ssets/[Xx][Rr][Ii].meta
-/[Aa]ssets/[Mm]eshing[Ff]eature[Pp]lugin/
-/[Aa]ssets/[Mm]eshing[Ff]eature[Pp]lugin.meta
-/[Aa]ssets/[Vv][Rr][Hh]ands/
-/[Aa]ssets/[Vv][Rr][Hh]ands.meta
-/[Aa]ssets/[Ff]ree Stylized Skybox/
-/[Aa]ssets/[Ff]ree Stylized Skybox.meta
-/[Aa]ssets/_Barking_Dog/
-/[Aa]ssets/_Barking_Dog.meta
-/[Aa]ssets/[Ss]ciFi Warehouse Kit/
-/[Aa]ssets/[Ss]ciFi Warehouse Kit.meta
-
-# ---- Assets de terceros — Firebase SDK (subido via Package Manager) ----
-/[Aa]ssets/[Ff]irebase/
-/[Aa]ssets/[Ff]irebase.meta
-/[Aa]ssets/[Ee]ditor/
-/[Aa]ssets/[Ee]ditor.meta
-
-# ---- Streaming Assets cache ----
-/[Aa]ssets/[Ss]treaming[Aa]ssets/
-/[Aa]ssets/[Ss]treaming[Aa]ssets.meta
-
-# ---- Plugin de Character (si es asset de tienda) ----
-/[Aa]ssets/[Cc]haracter/
-/[Aa]ssets/[Cc]haracter.meta
-
-# ---- Audio meta (si es de assets importados ignorados) ----
-/[Aa]ssets/Audio.meta
-
-
-# ---- Readme default de Unity ----
-/[Aa]ssets/[Rr]eadme.asset
-/[Aa]ssets/[Rr]eadme.asset.meta
-
-# ---- Input Actions generado ----
-# (Mantener si es propio del proyecto; comentar si se quiere ignorar)
-# /Assets/InputSystem_Actions.inputactions
-
-# ==============================================
-# LO QUE SÍ SE SUBE (NO está ignorado):
-# ==============================================
-# ✅ Assets/Scripts/          ← Todo el código del juego
-# ✅ Assets/Scenes/           ← Escenas Unity
-# ✅ Assets/Texture/          ← Texturas del proyecto
-# ✅ Assets/Audio/            ← Audio del proyecto
-# ✅ Assets/Resources/        ← Resources del proyecto
-# ✅ Assets/Settings/         ← Configuración XR/URP
-# ✅ Assets/InputSystem_Actions.inputactions
-# ✅ Packages/                ← manifest.json y packages-lock.json
-# ✅ ProjectSettings/         ← Configuración del proyecto Unity
-# ✅ README.md                ← Documentación del proyecto
+# ---- Git LFS for Binaries (Opcional si se usa LFS) ----
+*.mp3
+*.wav
+*.png
+*.jpg
+*.fbx
+*.mat
+*.unity
