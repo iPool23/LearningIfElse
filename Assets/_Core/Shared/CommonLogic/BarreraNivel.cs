@@ -60,8 +60,13 @@ public class BarreraNivel : MonoBehaviour
         // Luego verificar si debería estar desbloqueada
         ActualizarEstadoBarrera();
     }
+
+    void Update()
+    {
         // Verificar constantemente si la barrera debe desbloquearse
         ActualizarEstadoBarrera();
+    }
+
     void ActualizarEstadoBarrera()
     {
         if (gameManager == null)
@@ -76,29 +81,16 @@ public class BarreraNivel : MonoBehaviour
         bool deberiaEstarDesbloqueada = false;
 
         // Verificar si ESTE nivel ya está completado
-        bool esteNivelCompletado = false;
-        if (nivelRequerido >= 1 && nivelRequerido <= gameManager.maxNivel)
-        {
-            int indiceEsteNivel = nivelRequerido - 1;
-            if (indiceEsteNivel >= 0 && indiceEsteNivel < gameManager.nivelesCompletados.Length)
-            {
-                esteNivelCompletado = gameManager.nivelesCompletados[indiceEsteNivel];
-            }
-        }
+        bool esteNivelCompletado = gameManager.IsNivelCompletado(nivelRequerido);
 
         // Para la barrera del nivel 1, siempre debería estar desbloqueada (no hay nivel anterior)
         if (nivelRequerido == 1)
         {
             deberiaEstarDesbloqueada = true;
         }
-        else if (nivelAnterior >= 1 && nivelAnterior <= gameManager.maxNivel)
+        else if (nivelAnterior >= 1)
         {
-            // Verificar que el índice esté dentro del rango válido
-            int indice = nivelAnterior - 1;
-            if (indice >= 0 && indice < gameManager.nivelesCompletados.Length)
-            {
-                deberiaEstarDesbloqueada = gameManager.nivelesCompletados[indice];
-            }
+            deberiaEstarDesbloqueada = gameManager.PuedeAccederNivel(nivelRequerido);
         }
 
         // Actualizar estado de completado
@@ -356,7 +348,7 @@ public class BarreraNivel : MonoBehaviour
         // Registrar intento de acceso no autorizado
         if (gameManager != null)
         {
-            gameManager.errores++;
+            gameManager.RegistrarCaida(); 
             gameManager.dudas_Expresadas++; // Puede indicar confusión
         }        // Mostrar mensaje en UI
         Debug.Log($"Acceso denegado: {mensajeBloqueo}");
@@ -368,7 +360,7 @@ public class BarreraNivel : MonoBehaviour
         // Registrar intento de retroceso
         if (gameManager != null)
         {
-            gameManager.errores++;
+            gameManager.RegistrarCaida(); // Usamos el registro de error central
             gameManager.dudas_Expresadas++;
         }
 

@@ -116,7 +116,7 @@ public class BlockSpawner_Simple : MonoBehaviour
         // Registrar que se generaron los bloques
         if (gameManager != null)
         {
-            gameManager.comandosIniciados++;
+            // gameManager.comandosIniciados++; // Removido por simplificación o mover a Metrics
             Debug.Log($"Nivel {nivelAsociado} generado: {rows} filas, {columns} columnas");
         }
     }
@@ -155,7 +155,7 @@ public class BlockSpawner_Simple : MonoBehaviour
 
         if (gameManager != null)
         {
-            gameManager.reintentos_Nivel++;
+            // gameManager.reintentos_Nivel++; // Removido por simplificación
         }
     }
     /// <summary>
@@ -268,10 +268,6 @@ public class BlockSpawner_Simple : MonoBehaviour
             {
                 Debug.Log("Completando nivel después del teletransporte...");
                 gameManager.CompletarNivelActual();
-
-                // Completar la transición del nivel
-                yield return new WaitForSeconds(0.5f);
-                gameManager.CompletarTransicionNivel();
             }
         }
     }

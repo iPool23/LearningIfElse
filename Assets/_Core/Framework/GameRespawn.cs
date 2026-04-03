@@ -40,18 +40,37 @@ public class GameRespawn : MonoBehaviour
     [Header("=== ESTADÍSTICAS POR NIVEL ===")]
     public int nivel1_Saltos_Correctos = 0;
     public int nivel1_Caidas = 0;
+    public int nivel1_Saltos_Totales => nivel1_Saltos_Correctos + nivel1_Caidas;
     public int nivel2_Saltos_Correctos = 0;
     public int nivel2_Caidas = 0;
+    public int nivel2_Saltos_Totales => nivel2_Saltos_Correctos + nivel2_Caidas;
     public int nivel3_Saltos_Correctos = 0;
     public int nivel3_Caidas = 0;
+    public int nivel3_Saltos_Totales => nivel3_Saltos_Correctos + nivel3_Caidas;
+
+    [Header("=== RETOS Y ESTADO ===")]
+    public int comandosIniciados = 0;
+    public int reintentos_Nivel = 0;
+    public float tiempoTotal_Sesion => nivel1_Tiempo + nivel2_Tiempo + nivel3_Tiempo;
 
     [Header("=== UI REFS ===")]
     public TextMeshProUGUI uiNivelActual;
     public TextMeshProUGUI uiPuntaje;
     public GameObject panelBarrera;
 
+    [Header("=== INTERACCIONES VR (COMPATIBILIDAD) ===")]
+    public int teleports_Realizados = 0;
+    public int dudas_Expresadas = 0;
+    public int manipulacionesInteractivas = 0;
+
     // Propiedades para compatibilidad con scripts antiguos
     public int nivelActual => _progress != null ? _progress.nivelActual : 1;
+    public int maxNivel => _progress != null ? _progress.maxNivel : 3;
+
+    public bool IsNivelCompletado(int nivel) => _progress != null && _progress.IsNivelCompletado(nivel);
+
+    // Bloques ya contados en la sesión (Para evitar duplicados)
+    private HashSet<string> _bloquesContados = new HashSet<string>();
 
     void Awake()
     {
@@ -84,6 +103,15 @@ public class GameRespawn : MonoBehaviour
     }
 
     #region Lógica de Progresión
+
+    public void IniciarTiempoNivel()
+    {
+        _tiempoInicioNivel = Time.time;
+        Debug.Log($"[GameMaster] Timer de nivel {nivelActual} iniciado.");
+    }
+
+    public bool BloqueYaContado(string id) => _bloquesContados.Contains(id);
+    public void RegistrarBloqueContado(string id) => _bloquesContados.Add(id);
 
     public void RegistrarSaltoExitoso()
     {
@@ -182,96 +210,27 @@ public class GameRespawn : MonoBehaviour
 
     // Métodos de compatibilidad con Barreras y Spawners
     public bool PuedeAccederNivel(int nivel) => _progress.PuedeAccederNivel(nivel);
-}
-
-    /// <summary>
-    /// Método llamado por BlockSpawner después del teletransporte para completar la transición
-    /// </summary>
-    public void CompletarTransicionNivel()
-    {
-        if (nivelActual < maxNivel)
-        {
-            // AVANZAR AL SIGUIENTE NIVEL
-            int siguienteNivel = nivelActual + 1;
-            nivelActual = siguienteNivel;
-            tiempoInicioNivel = Time.time;  // REINICIAR TIMER DEL NUEVO NIVEL
-            reintentos_Nivel = 0;
-
-            Debug.Log($"Transición completada al nivel {nivelActual} - Timer reiniciado");
-        }
-    }
-
-    /// <summary>
-    /// Método para mostrar barrera manualmente cuando sea necesario
-    /// </summary>
-    public void MostrarBarreraManual()
-    {
-        MostrarBarreraNivel();
-    }
-
-    /// <summary>
-    /// Método para ser llamado por BarreraNivel cuando el jugador pasa la barrera
-    /// </summary>
-    public void IniciarTiempoNivel()
-    {
-        tiempoInicioNivel = Time.time;
-        nivelEnCurso = true;
-        Debug.Log($"⏱️ Timer de nivel {nivelActual} iniciado en {tiempoInicioNivel}");
-    }
 
     // --- PROPIEDADES DE SUMA GLOBAL POR NIVELES ---
     public int TotalSaltosTotalesPorNivel
     {
-        get { return nivel1_Saltos_Totales + nivel2_Saltos_Totales + nivel3_Saltos_Totales; }
+        get { return RegistrarSaltoCorrectoTotal(); }
     }
-    public int TotalSaltosCorrectosPorNivel
+    public int TotalSaltosCorrectosPorNivel => nivel1_Saltos_Correctos + nivel2_Saltos_Correctos + nivel3_Saltos_Correctos;
+    public int TotalCaidasPorNivel => nivel1_Caidas + nivel2_Caidas + nivel3_Caidas;
+
+    private int RegistrarSaltoCorrectoTotal()
     {
-        get { return nivel1_Saltos_Correctos + nivel2_Saltos_Correctos + nivel3_Saltos_Correctos; }
+        // En la versión simplificada, sumamos los contadores locales que ya tenemos
+        return nivel1_Saltos_Correctos + nivel2_Saltos_Correctos + nivel3_Saltos_Correctos;
     }
-    public int TotalCaidasPorNivel
-    {
-        get { return nivel1_Caidas + nivel2_Caidas + nivel3_Caidas; }
-    }
-    // --- FIN PROPIEDADES DE SUMA GLOBAL ---
 
     /// <summary>
-    /// Teletransporta al jugador al área final (0, -450, 945)
+    /// Teletransporta al jugador al área final.
     /// </summary>
     public void TeletransportarAFinal()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            player.transform.position = new Vector3(-11.804f, 17.612f, -5.92f);
-            player.transform.rotation = Quaternion.identity;
-            Debug.Log("[GameRespawn] Jugador teletransportado al área final (-11.804f, 17.612f, -5.92f)");
-        }
+        _playerSystems.Teletransportar(gameObject, new Vector3(-11.804f, 17.612f, -5.92f));
+        Debug.Log("[GameMaster] Teletransporte a zona final completado.");
     }
-}
-
-// --- FIN Helper ---
-
-// --- CLASES PARA SERIALIZACIÓN DE ESTADÍSTICAS ---
-[System.Serializable]
-public class EstadisticasSesion
-{
-    public string sessionId;
-    public string username;
-    public string timestamp;
-    public float puntaje;
-    public int aciertos;
-    public int errores;
-    public float tiempoTotal;
-    public NivelStats nivel1;
-    public NivelStats nivel2;
-    public NivelStats nivel3;
-}
-
-[System.Serializable]
-public class NivelStats
-{
-    public int saltos;
-    public int saltosCorrectos;
-    public int caidas;
-    public float tiempo;
 }

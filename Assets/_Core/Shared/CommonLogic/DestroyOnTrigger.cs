@@ -13,14 +13,10 @@ public class DestroyOnTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player") && !yaDestruido)
         {
-            yaDestruido = true;            // Registrar error en las métricas
+            yaDestruido = true;            // Registrar error utilizando el coordinador central
             if (gameManager != null)
             {
-                // El error ya se registra en GameRespawn.RegistrarCaida()
-                // Aquí solo agregamos feedback visual/auditivo
-                gameManager.errores++;
-                gameManager.interaccionesTotales++;
-                gameManager.saltos_Incorrectos++;
+                gameManager.RegistrarCaida();
                 Debug.Log("¡Vidrio roto! Caída registrada.");
             }
 

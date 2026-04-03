@@ -74,38 +74,12 @@ public class CountOnCorrect : MonoBehaviour
             gameManager.RegistrarBloqueContado(bloqueID);
         }
 
-        // Registrar acierto en las métricas
+        // Registrar acierto en las métricas usando el coordinador central
         if (gameManager != null)
         {
-            gameManager.aciertos++;
-            gameManager.interaccionesAcertadas++;
-            gameManager.interaccionesTotales++;
-            gameManager.saltos_Correctos++;
-
-            // Registrar acierto según el nivel actual
-            switch (gameManager.nivelActual)
-            {
-                case 1:
-                    gameManager.nivel1_Saltos_Correctos++;
-                    gameManager.nivel1_Saltos_Totales++;
-                    gameManager.if_Statements_Correctos++;
-                    break;
-                case 2:
-                    gameManager.nivel2_Saltos_Correctos++;
-                    gameManager.nivel2_Saltos_Totales++;
-                    gameManager.else_Statements_Correctos++;
-                    break;
-                case 3:
-                    gameManager.nivel3_Saltos_Correctos++;
-                    gameManager.nivel3_Saltos_Totales++;
-                    gameManager.nested_Statements_Correctos++;
-                    break;
-            }
-
-            // Aumentar puntaje
-            gameManager.puntajeObtenido += 10f; // 10 puntos por acierto
-
-            Debug.Log($"🎯 ¡ACIERTO #{gameManager.aciertos} en {gameObject.name}! Puntaje: {gameManager.puntajeObtenido}");
+            gameManager.RegistrarSaltoExitoso();
+            gameManager.manipulacionesInteractivas++;
+            Debug.Log($"🎯 ¡ACIERTO registrado en {gameObject.name}!");
         }
 
         // Efecto visual permanente: marcar como "usado"
