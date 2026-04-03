@@ -56,31 +56,51 @@ ehthumbs.db
 # ---- Paquetes de terceros grandes (ya están en Package Manager) ----
 # Estos se reinstalan automáticamente con Packages/manifest.json
 /[Aa]ssets/[Oo]culus/
+/[Aa]ssets/[Oo]culus.meta
 /[Aa]ssets/[Mm]eta[Xx][Rr]/
+/[Aa]ssets/[Mm]eta[Xx][Rr].meta
 /[Aa]ssets/[Ss]amples/
+/[Aa]ssets/[Ss]amples.meta
 /[Aa]ssets/[Ss]tarter[Aa]ssets/
+/[Aa]ssets/[Ss]tarter[Aa]ssets.meta
 /[Aa]ssets/[Ee]xternalDependencyManager/
+/[Aa]ssets/[Ee]xternalDependencyManager.meta
 /[Aa]ssets/[Tt]extMesh Pro/
+/[Aa]ssets/[Tt]extMesh Pro.meta
 /[Aa]ssets/[Tt]utorial[Ii]nfo/
-/[Aa]ssets/[Ss]tarterAssets/
+/[Aa]ssets/[Tt]utorial[Ii]nfo.meta
 /[Aa]ssets/[Xx][Rr]/
+/[Aa]ssets/[Xx][Rr].meta
 /[Aa]ssets/[Xx][Rr][Ii]/
-/[Aa]ssets/[Ss]tarterAssets/
+/[Aa]ssets/[Xx][Rr][Ii].meta
 /[Aa]ssets/[Mm]eshing[Ff]eature[Pp]lugin/
+/[Aa]ssets/[Mm]eshing[Ff]eature[Pp]lugin.meta
 /[Aa]ssets/[Vv][Rr][Hh]ands/
+/[Aa]ssets/[Vv][Rr][Hh]ands.meta
 /[Aa]ssets/[Ff]ree Stylized Skybox/
+/[Aa]ssets/[Ff]ree Stylized Skybox.meta
 /[Aa]ssets/_Barking_Dog/
+/[Aa]ssets/_Barking_Dog.meta
 /[Aa]ssets/[Ss]ciFi Warehouse Kit/
+/[Aa]ssets/[Ss]ciFi Warehouse Kit.meta
 
 # ---- Assets de terceros — Firebase SDK (subido via Package Manager) ----
 /[Aa]ssets/[Ff]irebase/
+/[Aa]ssets/[Ff]irebase.meta
 /[Aa]ssets/[Ee]ditor/
+/[Aa]ssets/[Ee]ditor.meta
 
 # ---- Streaming Assets cache ----
 /[Aa]ssets/[Ss]treaming[Aa]ssets/
+/[Aa]ssets/[Ss]treaming[Aa]ssets.meta
 
 # ---- Plugin de Character (si es asset de tienda) ----
 /[Aa]ssets/[Cc]haracter/
+/[Aa]ssets/[Cc]haracter.meta
+
+# ---- Audio meta (si es de assets importados ignorados) ----
+/[Aa]ssets/Audio.meta
+
 
 # ---- Readme default de Unity ----
 /[Aa]ssets/[Rr]eadme.asset

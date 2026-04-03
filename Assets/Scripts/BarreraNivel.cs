@@ -60,38 +60,8 @@ public class BarreraNivel : MonoBehaviour
         // Luego verificar si debería estar desbloqueada
         ActualizarEstadoBarrera();
     }
-    void Update()
-    {
         // Verificar constantemente si la barrera debe desbloquearse
-        ActualizarEstadoBarrera();        // Validación adicional: asegurar que el estado del collider sea correcto
-        if (barrierCollider != null)
-        {
-            if (!estaDesbloqueada && (barrierCollider.enabled == false || barrierCollider.isTrigger == true))
-            {
-                // La barrera debería estar bloqueada pero el collider está desactivado o es trigger
-                Debug.LogWarning("Corrigiendo estado de barrera - reactivando collider bloqueado sólido");
-                BloquearBarrera();
-            }
-            else if (estaDesbloqueada && !nivelCompletado && barrierCollider.isTrigger == false)
-            {
-                // La barrera debería estar desbloqueada pero aún es sólida
-                Debug.LogWarning("Corrigiendo estado de barrera - cambiando a trigger desbloqueado");
-                DesbloquearBarrera();
-            }
-            else if (nivelCompletado && !permitirRetroceso && barrierCollider.isTrigger == true)
-            {
-                // La barrera completada sin retroceso debería ser sólida pero está como trigger
-                Debug.LogWarning("Corrigiendo barrera completada - cambiando a sólida amarilla");
-                MarcarComoCompletado();
-            }
-            else if (nivelCompletado && permitirRetroceso && barrierCollider.isTrigger == false)
-            {
-                // La barrera completada con retroceso permitido debería ser trigger pero está sólida
-                Debug.LogWarning("Corrigiendo barrera completada - cambiando a trigger libre");
-                MarcarComoCompletado();
-            }
-        }
-    }
+        ActualizarEstadoBarrera();
     void ActualizarEstadoBarrera()
     {
         if (gameManager == null)
@@ -404,40 +374,10 @@ public class BarreraNivel : MonoBehaviour
 
         Debug.Log($"Retroceso bloqueado: {mensajeRetroceso}");
 
+        Debug.Log($"Retroceso bloqueado: {mensajeRetroceso}");
+
         // Mostrar mensaje en el mundo
         StartCoroutine(MostrarMensajeTemporalPersonalizado(mensajeRetroceso, Color.yellow));
-    }
-
-    void TeletransportarJugadorAtras(Collider player)
-    {
-        // Calcular posición segura hacia atrás
-        Vector3 direccionSegura = -transform.forward; // Opuesto a la dirección de avance
-        Vector3 posicionSegura = player.transform.position + direccionSegura * 3f; // Más distancia para ser efectivo
-
-        // Teletransportar
-        player.transform.position = posicionSegura;
-
-        // Si tiene Rigidbody, detener su movimiento
-        Rigidbody playerRb = player.GetComponent<Rigidbody>();
-        if (playerRb != null)
-        {
-            playerRb.linearVelocity = Vector3.zero;
-            playerRb.angularVelocity = Vector3.zero;
-        }
-
-        // Si tiene CharacterController, también funciona
-        CharacterController playerController = player.GetComponent<CharacterController>();
-        if (playerController != null)
-        {
-            // CharacterController no necesita ajustes adicionales de velocidad
-        }
-
-        if (gameManager != null)
-        {
-            gameManager.teleports_Realizados++;
-        }
-
-        Debug.Log($"🔄 Jugador teletransportado hacia atrás desde barrera nivel {nivelRequerido}");
     }
 
     void RegistrarPasoDeNivel(Collider player)

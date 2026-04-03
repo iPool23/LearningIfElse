@@ -12,11 +12,6 @@ public class CountOnCorrect : MonoBehaviour
         gameManager = FindFirstObjectByType<GameRespawn>();
         uiManager = FindFirstObjectByType<UIManager>();
 
-        // Debug adicional
-        Debug.Log($"CountOnCorrect iniciado en: {gameObject.name}");
-        Debug.Log($"GameManager encontrado: {gameManager != null}");
-        Debug.Log($"UIManager encontrado: {uiManager != null}");
-
         // Verificar el collider
         var collider = GetComponent<Collider>();
         if (collider != null)
@@ -57,7 +52,6 @@ public class CountOnCorrect : MonoBehaviour
                 // Solo registrar si está MUY cerca para ser más preciso
                 if (distance < 0.8f) // Reducido de 1f a 0.8f para más precisión
                 {
-                    Debug.Log($"¡Player en bloque {gameObject.name}! Registrando acierto por proximidad");
                     RegistrarAcierto();
                 }
             }

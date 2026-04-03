@@ -149,12 +149,7 @@ public class GameRespawn : MonoBehaviour
     private bool juegoTerminado = false;
     private bool nivelEnCurso = false;        // NUEVO: para controlar si el nivel está corriendo
 
-    [Header("=== Límite de Tiempo Global ===")]
-    public float tiempoLimiteGlobal = 600f; // 10 minuto (60 segundos)
     private bool tiempoLimiteAlcanzado = false;
-
-    // Nuevo: para controlar si el nivel está en curso
-    private bool[] nivelEnCursoArray = new bool[3];
 
     // === BLOQUES CONTADOS POR SESIÓN ===
     private System.Collections.Generic.HashSet<string> bloquesContados = new System.Collections.Generic.HashSet<string>();
@@ -209,9 +204,7 @@ public class GameRespawn : MonoBehaviour
             Debug.LogWarning($"Redimensionando array nivelesCompletados a {maxNivel} elementos");
             nivelesCompletados = new bool[maxNivel];
         }
-        tiempoInicio_Sesion = Time.time;
         // NO iniciar el timer del nivel aquí, solo cuando se pase la barrera
-        // tiempoInicioNivel = Time.time;
         nivelEnCurso = false; // El nivel comienza cuando se pasa la barrera
         ultimaPosicion = transform.position;
 
@@ -400,10 +393,6 @@ public class GameRespawn : MonoBehaviour
         float tiempoRealNivel = Time.time - tiempoInicioNivel;
         nivelEnCurso = false; // DETENER el timer del nivel
 
-        // Detener el tiempo en curso para este nivel
-        int idx = nivelActual - 1;
-        if (idx >= 0 && idx < nivelEnCursoArray.Length) nivelEnCursoArray[idx] = false;
-
         // Validar que el índice esté dentro de los límites del array
         int indiceNivel = nivelActual - 1;
         if (indiceNivel >= 0 && indiceNivel < nivelesCompletados.Length)
@@ -506,7 +495,6 @@ public class GameRespawn : MonoBehaviour
 
             // AVANZAR AL SIGUIENTE NIVEL
             nivelActual++;
-            // tiempoInicioNivel = Time.time;  // REINICIAR TIMER DEL NUEVO NIVEL (ahora lo hace IniciarTiempoNivel)
             reintentos_Nivel = 0;
             nivelEnCurso = false; // El timer del nivel se inicia al pasar la barrera
 
@@ -536,7 +524,6 @@ public class GameRespawn : MonoBehaviour
         }
 
         reintentos_Nivel++;
-        // tiempoInicioNivel = Time.time;  // REINICIAR TIMER DEL NIVEL ACTUAL (ahora lo hace IniciarTiempoNivel)
         nivelEnCurso = false; // El timer del nivel se inicia al pasar la barrera
         transform.position = respawnPosition;
 
@@ -838,9 +825,6 @@ public class GameRespawn : MonoBehaviour
             reintentos_Nivel = 0;
 
             Debug.Log($"Transición completada al nivel {nivelActual} - Timer reiniciado");
-
-            // Opcional: Mostrar barrera después del teletransporte si se desea
-            // MostrarBarreraNivel();
         }
     }
 
@@ -892,13 +876,6 @@ public class GameRespawn : MonoBehaviour
     }
 }
 
-// --- INICIO: Helper para serializar diccionario ---
-[Serializable]
-public class SerializableDictionary
-{
-    public Dictionary<string, object> dict;
-    public SerializableDictionary(Dictionary<string, object> d) { dict = d; }
-}
 // --- FIN Helper ---
 
 // --- CLASES PARA SERIALIZACIÓN DE ESTADÍSTICAS ---

@@ -213,56 +213,6 @@ public class BlockSpawner_Simple : MonoBehaviour
         }
     }
     /// <summary>
-    /// Teletransportar con delay para evitar problemas
-    /// </summary>
-    System.Collections.IEnumerator TeletransportarConDelay(GameObject player)
-    {
-        Debug.Log("Iniciando teletransporte...");
-        yield return new WaitForSeconds(0.5f); // Pequeño delay
-
-        if (player != null)
-        {
-            Debug.Log("Teletransportando jugador a spawn point...");
-
-            // Desactivar física temporalmente
-            Rigidbody rb = player.GetComponent<Rigidbody>();
-            CharacterController cc = player.GetComponent<CharacterController>();
-
-            if (rb != null)
-            {
-                rb.linearVelocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
-                rb.isKinematic = true; // Temporalmente kinematic
-            }
-
-            if (cc != null)
-            {
-                cc.enabled = false; // Desactivar temporalmente
-            }
-
-            // Teletransportar
-            player.transform.position = new Vector3(-11.804f, 1.022f, -0.238f);
-            player.transform.rotation = Quaternion.identity; // Resetear rotación también
-
-            yield return new WaitForEndOfFrame(); // Esperar un frame
-
-            // Reactivar física
-            if (rb != null)
-            {
-                rb.isKinematic = false;
-                rb.linearVelocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
-            }
-
-            if (cc != null)
-            {
-                cc.enabled = true;
-            }
-
-            Debug.Log($"Jugador teletransportado exitosamente a {player.transform.position}");
-        }
-    }
-    /// <summary>
     /// Teletransportar y luego completar el nivel
     /// </summary>
     System.Collections.IEnumerator TeletransportarYCompletarNivel(GameObject player)

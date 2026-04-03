@@ -3,12 +3,10 @@ using UnityEngine;
 public class DestroyOnTrigger : MonoBehaviour
 {
     private GameRespawn gameManager;
-    private UIManager uiManager;
     private bool yaDestruido = false;
     void Start()
     {
         gameManager = FindFirstObjectByType<GameRespawn>();
-        uiManager = FindFirstObjectByType<UIManager>();
     }
 
     void OnTriggerEnter(Collider other)
