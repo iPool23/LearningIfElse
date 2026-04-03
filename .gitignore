@@ -1,0 +1,105 @@
+# ==============================================
+# Unity .gitignore — LearningIfElse VR Project
+# ==============================================
+
+# ---- Carpetas generadas por Unity (NO subir) ----
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+
+# ---- Caché del Asset Store y paquetes locales ----
+/[Aa]ssets/AssetStoreTools*
+
+# ---- Archivos de autocompletado / IDE ----
+.vs/
+.vscode/
+*.csproj
+*.unityproj
+*.sln
+*.slnx
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# ---- Archivos de OS ----
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# ---- Configuración local del editor ----
+/[Uu]ser[Ss]ettings/
+
+# ---- Build results ----
+[Ww]indows[Ss]toreApp/
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# ---- Firebase / Google Services ----
+# (Mantener google-services.json SI se decide incluir credenciales)
+# google-services.json
+
+# ---- Paquetes de terceros grandes (ya están en Package Manager) ----
+# Estos se reinstalan automáticamente con Packages/manifest.json
+/[Aa]ssets/[Oo]culus/
+/[Aa]ssets/[Mm]eta[Xx][Rr]/
+/[Aa]ssets/[Ss]amples/
+/[Aa]ssets/[Ss]tarter[Aa]ssets/
+/[Aa]ssets/[Ee]xternalDependencyManager/
+/[Aa]ssets/[Tt]extMesh Pro/
+/[Aa]ssets/[Tt]utorial[Ii]nfo/
+/[Aa]ssets/[Ss]tarterAssets/
+/[Aa]ssets/[Xx][Rr]/
+/[Aa]ssets/[Xx][Rr][Ii]/
+/[Aa]ssets/[Ss]tarterAssets/
+/[Aa]ssets/[Mm]eshing[Ff]eature[Pp]lugin/
+/[Aa]ssets/[Vv][Rr][Hh]ands/
+/[Aa]ssets/[Ff]ree Stylized Skybox/
+/[Aa]ssets/_Barking_Dog/
+/[Aa]ssets/[Ss]ciFi Warehouse Kit/
+
+# ---- Assets de terceros — Firebase SDK (subido via Package Manager) ----
+/[Aa]ssets/[Ff]irebase/
+/[Aa]ssets/[Ee]ditor/
+
+# ---- Streaming Assets cache ----
+/[Aa]ssets/[Ss]treaming[Aa]ssets/
+
+# ---- Plugin de Character (si es asset de tienda) ----
+/[Aa]ssets/[Cc]haracter/
+
+# ---- Readme default de Unity ----
+/[Aa]ssets/[Rr]eadme.asset
+/[Aa]ssets/[Rr]eadme.asset.meta
+
+# ---- Input Actions generado ----
+# (Mantener si es propio del proyecto; comentar si se quiere ignorar)
+# /Assets/InputSystem_Actions.inputactions
+
+# ==============================================
+# LO QUE SÍ SE SUBE (NO está ignorado):
+# ==============================================
+# ✅ Assets/Scripts/          ← Todo el código del juego
+# ✅ Assets/Scenes/           ← Escenas Unity
+# ✅ Assets/Texture/          ← Texturas del proyecto
+# ✅ Assets/Audio/            ← Audio del proyecto
+# ✅ Assets/Resources/        ← Resources del proyecto
+# ✅ Assets/Settings/         ← Configuración XR/URP
+# ✅ Assets/InputSystem_Actions.inputactions
+# ✅ Packages/                ← manifest.json y packages-lock.json
+# ✅ ProjectSettings/         ← Configuración del proyecto Unity
+# ✅ README.md                ← Documentación del proyecto
