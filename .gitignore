@@ -29,6 +29,7 @@
 
 # EXCEPCIONES: Lo que SÍ queremos en el repositorio
 !/Assets/_Core/
+!/Assets/_Barking_Dog/
 !/Assets/InputSystem_Actions.inputactions
 !/Assets/InputSystem_Actions.inputactions.meta
 
