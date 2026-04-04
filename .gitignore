@@ -41,7 +41,6 @@
 !/.gitignore
 
 # ---- Git LFS for Binaries (Opcional si se usa LFS) ----
-*.mp3
 *.wav
 *.png
 *.jpg
