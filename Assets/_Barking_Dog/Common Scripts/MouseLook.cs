@@ -32,6 +32,6 @@ public class MouseLook : MonoBehaviour
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         // Rotación horizontal (izquierda/derecha) al padre (OVRCameraRig)
-        transform.parent.Rotate(Vector3.up * mouseX);
+        transform.parent.parent.Rotate(Vector3.up * mouseX);
     }
 }
