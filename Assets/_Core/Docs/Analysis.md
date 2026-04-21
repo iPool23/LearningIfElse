@@ -94,11 +94,9 @@ LearningIfElsev1/
 | Variable | Tipo | Descripción |
 |----------|------|-------------|
 | `comandosIniciados` | `int` | CI — Comandos iniciados (IIU) |
-| `gestosInterpretados` | `int` | GI — Gestos interpretados (IIU) |
 | `manipulacionesInteractivas` | `int` | MI — Manipulaciones interactivas (IIU) |
-| `interaccionesAcertadas` | `int` | IA — Interacciones acertadas (TPI) |
+| `aciertos` | `int` | IA — Interacciones acertadas (TPI) |
 | `interaccionesTotales` | `int` | IT — Interacciones totales (TPI) |
-| `velocidadMovimientoMedida` | `float` | VM — Velocidad medida (IFN) |
 | `velocidadInicialEsperada` | `float` | VI = 1.0f — Velocidad inicial base (IFN) |
 | `velocidadEstandarObjetivo` | `float` | VE = 4.0f — Velocidad estándar objetivo (IFN) |
 
@@ -107,29 +105,15 @@ LearningIfElsev1/
 |----------|------|-------------|
 | `puntajeObtenido` | `float` | Puntaje total acumulado |
 | `puntajeMaximoPosible` | `float` | PM = 100f |
-| `porcentajeRendimiento` | `float` | % rendimiento = (IA/IT) × 100 |
-| `evaluacionConceptual` | `float` | EC — Dominio conceptual (0–1) |
-| `aplicacionPractica` | `float` | AP — Aplicación práctica (0–1) |
-| `resolucionCasos` | `float` | RC — Resolución de casos (0–1) |
-| `sumaScoresSUS` | `float` | SS — Suma de scores SUS (satisfacción usuario) |
+| `nivel1/2/3_Tiempo` | `float` | Tiempo real gastado por nivel |
+| `nivel1/2/3_Saltos_Correctos` | `int` | Saltos correctos por nivel |
+| `nivel1/2/3_Caidas` | `int` | Caídas por nivel |
 
 **Variables de Mecánica de Juego:**
 | Variable | Tipo | Descripción |
 |----------|------|-------------|
-| `saltos_Correctos` | `int` | Vidrios seguros pisados |
-| `saltos_Incorrectos` | `int` | Vidrios que se rompieron / caídas por trigger |
 | `reintentos_Nivel` | `int` | Reintentos del nivel en curso |
-| `nivel1/2/3_Saltos_Totales` | `int` | Saltos totales por nivel |
-| `nivel1/2/3_Saltos_Correctos` | `int` | Saltos correctos por nivel |
-| `nivel1/2/3_Caidas` | `int` | Caídas por nivel |
-| `nivel1/2/3_Tiempo` | `float` | Tiempo real gastado por nivel |
-| `if_Statements_Correctos` | `int` | Aciertos en nivel de IF simple |
-| `else_Statements_Correctos` | `int` | Aciertos en nivel de IF-ELSE |
-| `nested_Statements_Correctos` | `int` | Aciertos en nivel de anidadas |
 | `dudas_Expresadas` | `int` | Intentos de acceso bloqueado / retroceso |
-| `pausas_Largas` | `int` | Pausas >5 s antes de saltar |
-| `veces_Menu_Ayuda` | `int` | Veces que abrió el menú de ayuda |
-| `tiempoLimiteGlobal` | `float` | Límite máximo de sesión (default: 600 s) |
 | `teleports_Realizados` | `int` | Teletransportes totales realizados |
 
 **Propiedades calculadas:**
@@ -151,7 +135,7 @@ LearningIfElsev1/
 | `RegistrarBloqueContado(string id)` | Registra un bloque como ya contado en la sesión |
 | `RegistrarCaida()` | Registra caída y actualiza métricas por nivel |
 | `RegistrarSaltoExitoso()` | Registra acierto y actualiza métricas |
-| `CalcularMetricasFinales()` | Calcula IIU, TPI, IFN, IDC, ISU al terminar el juego |
+| `CalcularMetricasFinales()` | Calcula IIU, TPI, IFN, IDC al terminar el juego |
 | `TeletransportarAFinal()` | Mueve al jugador a `(-11.804, 17.612, -5.92)` (área final/lobby) |
 | `CompletarJuego()` | Teletransporta al área final, calcula métricas, llama a `GuardarEstadisticas()` |
 
@@ -403,11 +387,10 @@ El proyecto implementa un modelo de variables para investigación académica:
 ### Índices Calculados
 | Índice | Fórmula | Descripción |
 |--------|---------|-------------|
-| **IIU** (Índice Interacción Usuario) | `(CI + GI + MI) / 3` | Nivel de engagement con la interfaz |
+| **IIU** (Índice Interacción Usuario) | `(CI + MI) / 2` | Nivel de engagement con la interfaz |
 | **TPI** (Tasa Precisión Interacción) | `(IA / IT) × 100` | Porcentaje de aciertos sobre total de interacciones |
 | **IFN** (Índice Fluidez Navegación) | `((VM - VI) / (VE - VI)) × 100` | Normalización de velocidad en rango [VI=1.0, VE=4.0] u/s |
 | **IDC** (Índice Dominio Conceptual) | `(EC + AP + RC) / 3` | Comprensión de los conceptos enseñados |
-| **ISU** (Índice Satisfacción Usuario) | `(SS / NT) × 10` | Basado en escala SUS (System Usability Scale) |
 
 ### Persistencia de Datos
 - **Local:** `PlayerPrefs` (19+ claves guardadas al finalizar)

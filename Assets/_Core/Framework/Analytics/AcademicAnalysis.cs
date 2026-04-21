@@ -38,10 +38,9 @@ namespace LearningIfElse.Framework.Analysis
         }
 
         /// <summary>
-        /// Calcula la Satisfacción del Usuario (ISU) basada en SUS.
-        /// Fórmula: (SS / NT) * 10
+        /// Calcula el Índice de Interacción del Usuario (IIU).
         /// </summary>
-        public float CalcularISU(float sumaScoresSUS, int numeroTotalPreguntas)
+        public float CalcularIIU(float sumaScoresSUS, int numeroTotalPreguntas)
         {
             if (numeroTotalPreguntas <= 0) return 0f;
             return (sumaScoresSUS / numeroTotalPreguntas) * 10f;
