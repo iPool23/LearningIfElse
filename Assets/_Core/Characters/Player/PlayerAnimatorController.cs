@@ -1,5 +1,10 @@
 using UnityEngine;
+using LearningIfElse.Framework.PlayerSystems;
 
+/// <summary>
+/// PlayerAnimatorController - Maneja las animaciones del personaje visible.
+/// Lee el estado de VRLocomotion para sincronizar Speed y Jump con el Animator.
+/// </summary>
 public class PlayerAnimatorController : MonoBehaviour
 {
     [Header("Referencias")]
@@ -7,102 +12,62 @@ public class PlayerAnimatorController : MonoBehaviour
     public OVRCameraRig cameraRig;
 
     [Header("Configuración")]
-    public float walkSpeed = 0.3f;
-    public float runSpeed = 0.6f;
     public float smoothTime = 0.1f;
 
-    // Variables internas
-    private float currentSpeed = 0f;
-    private float smoothVelocity;
-    private Vector3 lastPosition;
-    private bool isVR;
-
-    // Hashes para optimización
+    // Hashes para optimización (evitar string lookups en Update)
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
-    private static readonly int JumpHash = Animator.StringToHash("Jump");
+    private static readonly int JumpHash  = Animator.StringToHash("Jump");
+
+    private VRLocomotion _locomotion;
+    private float _smoothSpeed;
+    private float _smoothVelocity;
 
     void Start()
     {
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
 
-        // Detectar si estamos en VR
-        isVR = OVRManager.isHmdPresent;
+        // Buscar el VRLocomotion en el jugador o en sus padres
+        _locomotion = GetComponent<VRLocomotion>();
+        if (_locomotion == null)
+            _locomotion = GetComponentInParent<VRLocomotion>();
 
-        lastPosition = transform.position;
+        if (_locomotion == null)
+            Debug.LogWarning("[PlayerAnimatorController] No se encontró VRLocomotion. Las animaciones no se actualizarán.");
     }
 
     void Update()
     {
-        float targetSpeed = 0f;
+        if (animator == null) return;
 
-        if (isVR)
-        {
-            targetSpeed = GetVRSpeed();
-        }
-        else
-        {
-            targetSpeed = GetKeyboardSpeed();
-        }
+        // ── Velocidad suavizada ───────────────────────────────────────────────────
+        float targetSpeed = _locomotion != null ? _locomotion.CurrentSpeed : 0f;
 
-        // Si hay input de teclado aunque estemos en VR, usarlo también
-        float keyboardSpeed = GetKeyboardSpeed();
-        if (keyboardSpeed > targetSpeed)
-            targetSpeed = keyboardSpeed;
+        // Normalizar: walkSpeed ≈ 3 → 0.3, runSpeed ≈ 6 → 1.0
+        float normalizedSpeed = Mathf.Clamp01(targetSpeed / 6f);
 
-        // Suavizar la transición de velocidad
-        currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref smoothVelocity, smoothTime);
+        _smoothSpeed = Mathf.SmoothDamp(_smoothSpeed, normalizedSpeed, ref _smoothVelocity, smoothTime);
+        animator.SetFloat(SpeedHash, _smoothSpeed);
 
-        // Enviar al Animator
-        animator.SetFloat(SpeedHash, currentSpeed);
-
-        // Jump con teclado (Space) o botón A del Quest
-        if (Input.GetKeyDown(KeyCode.Space) || OVRInput.GetDown(OVRInput.Button.One))
+        // ── Salto ─────────────────────────────────────────────────────────────────
+        // Escuchar el botón A (VRLocomotion lo procesa, aquí solo disparamos la animación)
+        if (OVRInput.GetDown(OVRInput.Button.One) || Input.GetKeyDown(KeyCode.Space))
         {
             animator.SetTrigger(JumpHash);
         }
-
-        lastPosition = transform.position;
-    }
-
-    float GetKeyboardSpeed()
-    {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
-        float inputMagnitude = new Vector2(h, v).magnitude;
-
-        if (inputMagnitude > 0.1f)
-        {
-            // Shift para correr
-            if (Input.GetKey(KeyCode.LeftShift))
-                return 1f;
-            else
-                return 0.3f;
-        }
-
-        return 0f;
-    }
-
-    float GetVRSpeed()
-    {
-        // Velocidad basada en el movimiento real del personaje
-        Vector3 delta = transform.position - lastPosition;
-        delta.y = 0f; // Ignorar movimiento vertical
-        float speed = delta.magnitude / Time.deltaTime;
-
-        // Normalizar: caminar ~1.5 m/s, correr ~3 m/s
-        return Mathf.Clamp01(speed / 3f);
     }
 
     void LateUpdate()
     {
-        // Posición — seguir al OVRCameraRig
+        if (cameraRig == null) return;
+
+        // El mesh del personaje sigue al OVRCameraRig
         Vector3 pos = cameraRig.transform.position;
-        pos.y = 0; // o ajusta según necesites
+        pos.y = transform.position.y; // Mantener Y controlada por el CharacterController
         transform.position = pos;
 
-        // Rotación — solo eje Y
+        // Solo rotar en el eje Y
         float camY = cameraRig.transform.eulerAngles.y;
-        transform.rotation = Quaternion.Euler(0, camY, 0);
+        transform.rotation = Quaternion.Euler(0f, camY, 0f);
     }
 }
