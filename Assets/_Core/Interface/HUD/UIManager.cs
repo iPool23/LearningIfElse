@@ -158,8 +158,18 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void MostrarEstadisticasFinales()
     {
+        Debug.Log("[UIManager] MostrarEstadisticasFinales() llamado.");
+
         if (panelEstadisticas != null)
+        {
             panelEstadisticas.SetActive(true);
+            Debug.Log("[UIManager] ✅ panelEstadisticas activado.");
+        }
+        else
+        {
+            Debug.LogError("[UIManager] ❌ panelEstadisticas es NULL. Asígnalo en el Inspector del UIManager.");
+        }
+
         if (panelHUD != null)
             panelHUD.SetActive(false);
     }

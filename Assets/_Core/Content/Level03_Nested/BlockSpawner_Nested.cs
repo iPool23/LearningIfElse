@@ -247,13 +247,21 @@ public class BlockSpawner_Nested : MonoBehaviour
     System.Collections.IEnumerator TeletransportarYCompletarJuego(GameObject player)
     {
         Debug.Log("Iniciando teletransporte final del juego...");
-        yield return new WaitForSeconds(0.2f); // Delay más corto
+        yield return new WaitForSeconds(0.2f);
 
         if (player != null)
         {
-            Debug.Log("Teletransportando jugador a spawn point...");
+            // 1. Completar el nivel PRIMERO para que FinalizarSesión() se llame
+            //    antes de mover al jugador (así el respawn automático queda detenido)
+            if (gameManager != null)
+            {
+                Debug.Log("Completando nivel final y terminando juego...");
+                gameManager.CompletarNivelActual();
+            }
 
-            // Desactivar física temporalmente
+            yield return new WaitForSeconds(0.3f);
+
+            // 2. Desactivar física temporalmente para el teletransporte
             Rigidbody rb = player.GetComponent<Rigidbody>();
             CharacterController cc = player.GetComponent<CharacterController>();
 
@@ -261,41 +269,26 @@ public class BlockSpawner_Nested : MonoBehaviour
             {
                 rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
-                rb.isKinematic = true; // Temporalmente kinematic
+                rb.isKinematic = true;
             }
+            if (cc != null) cc.enabled = false;
 
-            if (cc != null)
-            {
-                cc.enabled = false; // Desactivar temporalmente
-            }
+            // 3. Teletransportar al ÁREA FINAL (arriba), NO al respawn
+            player.transform.position = new Vector3(-11.804f, 17.612f, -5.92f);
+            player.transform.rotation = Quaternion.identity;
 
-            // Teletransportar
-            player.transform.position = new Vector3(-11.804f, 1.022f, -0.238f);
-            player.transform.rotation = Quaternion.identity; // Resetear rotación también
+            yield return new WaitForEndOfFrame();
 
-            yield return new WaitForEndOfFrame(); // Esperar un frame
-
-            // Reactivar física
+            // 4. Reactivar física
             if (rb != null)
             {
                 rb.isKinematic = false;
                 rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
             }
+            if (cc != null) cc.enabled = true;
 
-            if (cc != null)
-            {
-                cc.enabled = true;
-            }
-
-            Debug.Log($"Jugador teletransportado exitosamente a {player.transform.position}");            // AHORA SÍ completar el nivel
-            yield return new WaitForSeconds(0.3f); // Pequeño delay adicional
-
-            if (gameManager != null)
-            {
-                Debug.Log("Completando nivel final y terminando juego...");
-                gameManager.CompletarNivelActual();
-            }
+            Debug.Log($"[Level3] Jugador en área final: {player.transform.position}");
         }
     }
 }

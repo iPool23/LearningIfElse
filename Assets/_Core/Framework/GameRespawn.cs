@@ -72,6 +72,14 @@ public class GameRespawn : MonoBehaviour
     // Bloques ya contados en la sesión (Para evitar duplicados)
     private HashSet<string> _bloquesContados = new HashSet<string>();
 
+    // Referencia al transform real del jugador (el objeto taggeado "Player")
+    // En VR el XR Rig root no cae, solo la cámara/jugador se mueve.
+    private Transform _playerTransform;
+    private float _respawnCooldown = 0f; // evita bucle de respawn infinito
+
+    // Referencia al UIManager para mostrar estadísticas al finalizar
+    private UIManager _uiManager;
+
     void Awake()
     {
         // Inicialización de componentes (pueden estar en el mismo objeto o diferentes)
@@ -85,17 +93,44 @@ public class GameRespawn : MonoBehaviour
     {
         _tiempoInicioNivel = Time.time;
         ActualizarUI();
+
+        // Cachear el transform del jugador real (tag "Player")
+        GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
+        if (playerGO != null)
+            _playerTransform = playerGO.transform;
+        else
+            Debug.LogWarning("[GameRespawn] No se encontró un objeto con tag 'Player'. El respawn por caída no funcionará.");
+
+        // Cachear UIManager para mostrar estadísticas al completar los 3 niveles
+        _uiManager = FindFirstObjectByType<UIManager>();
+        if (_uiManager == null)
+            Debug.LogWarning("[GameRespawn] No se encontró UIManager en la escena.");
     }
 
     void FixedUpdate()
     {
-        // Delegar física de respawn
-        if (transform.position.y < _playerSystems.threshold)
+        // Si el juego ya terminó, no hacer respawn automático
+        // (el jugador está en el área final y no debe regresar al spawn)
+        if (_progress != null && _progress.JuegoTerminado) return;
+
+        // Bajar el cooldown de respawn
+        if (_respawnCooldown > 0f)
+            _respawnCooldown -= Time.fixedDeltaTime;
+
+        // Respawn automático: verificar la Y del jugador real, NO del XR Rig root.
+        // En VR el rig raíz no cae; la posición real del jugador viene del objeto taggeado "Player".
+        // NOTA: NO se llama RegistrarCaida() aquí porque DestroyOnTrigger
+        // ya la registra en el momento que el jugador toca el bloque incorrecto.
+        if (_playerTransform != null &&
+            _playerTransform.position.y < _playerSystems.threshold &&
+            _respawnCooldown <= 0f)
         {
-            RegistrarCaida();
-            _playerSystems.Respawn(gameObject);
+            _respawnCooldown = 2f; // evitar bucle si el spawn point también queda bajo
+            Debug.Log($"[GameRespawn] Jugador bajo threshold ({_playerTransform.position.y:F1} < {_playerSystems.threshold}). Respawn.");
+            _playerSystems.Respawn(_playerTransform.gameObject);
         }
     }
+
 
     void Update()
     {
@@ -169,8 +204,20 @@ public class GameRespawn : MonoBehaviour
 
     private void FinalizarSesión()
     {
-        Debug.Log("[GameMaster] Sesión finalizada. Sincronizando con la nube...");
+        Debug.Log("[GameMaster] ¡Juego completado! Sincronizando con la nube y mostrando estadísticas...");
+
+        // 1. Subir datos a Firebase
         PrepararYEnviarDatos();
+
+        // 2. Mostrar el panel de Estadísticas Finales en la UI
+        if (_uiManager != null)
+        {
+            _uiManager.MostrarEstadisticasFinales();
+        }
+        else
+        {
+            Debug.LogWarning("[GameRespawn] UIManager no encontrado. No se puede mostrar el panel de Estadísticas.");
+        }
     }
 
     #endregion

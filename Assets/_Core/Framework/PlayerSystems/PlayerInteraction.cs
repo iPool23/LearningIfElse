@@ -9,7 +9,7 @@ namespace LearningIfElse.Framework.PlayerSystems
     public class PlayerInteraction : MonoBehaviour
     {
         [Header("Configuración de Respawn")]
-        public float threshold = -10f;
+        public float threshold = -8f;
         public Vector3 respawnPosition = new Vector3(-11.804f, 1.022f, -0.238f);
 
         [Header("Audio")]
