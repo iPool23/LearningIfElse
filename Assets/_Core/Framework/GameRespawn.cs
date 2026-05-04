@@ -273,11 +273,16 @@ public class GameRespawn : MonoBehaviour
     }
 
     /// <summary>
-    /// Teletransporta al jugador al área final.
+    /// Teletransporta al jugador al área final y detiene el respawn automático.
+    /// Llamado al completar los 3 niveles O al agotarse el tiempo de sesión.
     /// </summary>
     public void TeletransportarAFinal()
     {
-        _playerSystems.Teletransportar(gameObject, new Vector3(-11.804f, 17.612f, -5.92f));
+        // Usar _playerTransform (cacheado en Start) en vez de gameObject
+        // para funcionar correctamente en arquitecturas VR donde GameRespawn
+        // puede NO estar en el mismo objeto que el jugador.
+        GameObject target = _playerTransform != null ? _playerTransform.gameObject : gameObject;
+        _playerSystems.Teletransportar(target, new Vector3(-11.804f, 17.612f, -5.92f));
         Debug.Log("[GameMaster] Teletransporte a zona final completado.");
     }
 }

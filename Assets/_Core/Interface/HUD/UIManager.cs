@@ -81,9 +81,14 @@ public class UIManager : MonoBehaviour
                 _tiempoSesion = limiteSegundos;
                 _sesionTerminada = true;
 
-                // Redirigir automáticamente a Estadísticas
+                Debug.Log("[UIManager] Tiempo de sesión agotado. Teletransportando al área final...");
+
+                // 1. Teletransportar al jugador al área final (igual que al completar los 3 niveles)
+                if (gameManager != null)
+                    gameManager.TeletransportarAFinal();
+
+                // 2. Mostrar el panel de Estadísticas
                 MostrarEstadisticasFinales();
-                Debug.Log("[UIManager] Tiempo de sesión agotado. Redirigiendo a Estadísticas.");
             }
 
             ActualizarHUD();
